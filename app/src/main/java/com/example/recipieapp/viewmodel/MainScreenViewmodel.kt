@@ -1,5 +1,6 @@
 package com.example.recipieapp.viewmodel
 
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
@@ -11,6 +12,7 @@ import com.example.recipieapp.model.Equipments
 import com.example.recipieapp.model.Nutritions
 import com.example.recipieapp.model.Recipe
 import com.example.recipieapp.model.detailRecipe
+import com.example.recipieapp.newtwork.Suggetion
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -31,6 +33,13 @@ sealed interface DetailRecipeUIState{
         val nutritions: Nutritions,
     ):DetailRecipeUIState
 }
+
+sealed interface SuggetionUIState{
+    object Ideal:SuggetionUIState
+    data class Error(val message: String):SuggetionUIState
+    data class Sucsess(val suggetions:List<Suggetion>):SuggetionUIState
+    object Loading:SuggetionUIState
+}
 class MainScreenViewmodel(
     private val networkRepositoryRecipeApp: NetworkRepositoryRecipeApp
 ) :ViewModel(){
@@ -38,6 +47,9 @@ class MainScreenViewmodel(
     val uiState = _listOfRecipiseUIState.asStateFlow()
     private var _detailRecipUIState:MutableStateFlow<DetailRecipeUIState> = MutableStateFlow(DetailRecipeUIState.Loading)
     val detailRecipeUIState = _detailRecipUIState.asStateFlow()
+    private var _suggetionUIState = MutableStateFlow<SuggetionUIState>(SuggetionUIState.Ideal)
+    val suggetionUIState = _suggetionUIState.asStateFlow()
+
     fun getRandomRecipes(){
         viewModelScope.launch {
             _listOfRecipiseUIState.update {
@@ -50,6 +62,21 @@ class MainScreenViewmodel(
             }
         }
     }
+
+    fun getsuggetions(test:String){
+        viewModelScope.launch {
+            _suggetionUIState.update {
+                SuggetionUIState.Loading
+                try {
+                    val list = networkRepositoryRecipeApp.getSuggestions(test)
+                    SuggetionUIState.Sucsess(list)
+                }catch (e:Exception){
+                    SuggetionUIState.Error(e.message.toString())
+                }
+            }
+        }
+    }
+
     fun getDetaile(id:Int){
         viewModelScope.launch {
             _detailRecipUIState.update {

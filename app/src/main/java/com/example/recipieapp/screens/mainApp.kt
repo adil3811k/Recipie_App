@@ -22,8 +22,7 @@ fun mainApp(
     modifier: Modifier = Modifier
 ) {
     val navController = rememberNavController()
-
-    NavHost(navController =navController , startDestination = Screens.Login_Singin.toString()) {
+    NavHost(navController =navController , startDestination = Screens.Search.toString()) {
         composable(route = Screens.Login_Singin.toString()){
             Login_SingUpScreen{
                 navController.navigate(route = Screens.HomeScreen.toString())
@@ -36,7 +35,7 @@ fun mainApp(
             RecipeView(id = it.arguments?.getString("id").toString())
         }
         composable(route = Screens.Search.toString()){
-            SearchScreeen()
+            SearchScreeen(navHostController = navController)
         }
     }
 }

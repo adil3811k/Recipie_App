@@ -13,25 +13,31 @@ interface ApiService{
 
     @GET("/recipes/random")
     suspend fun getRandomRecipe(
-        @Query("apiKey") apiKey:String = "ebc485795f884985bb398307e7e5843e",
+        @Query("apiKey") apiKey:String = "bfece9704b2348de9cb27c83ecff42ab",
         @Query("number") number:Int = 100
     ):Recipes
 
     @GET("/recipes/{id}/information")
     suspend fun getDetail(
         @Path("id") id :Int,
-        @Query("apiKey") apiKey: String = "ebc485795f884985bb398307e7e5843e"
+        @Query("apiKey") apiKey: String = "bfece9704b2348de9cb27c83ecff42ab"
     ):detailRecipe
 
     @GET("/recipes/{id}/equipmentWidget.json")
     suspend fun getEquipments(
         @Path("id") id:Int,
-        @Query("apiKey") apiKey: String = "ebc485795f884985bb398307e7e5843e"
+        @Query("apiKey") apiKey: String = "bfece9704b2348de9cb27c83ecff42ab"
     ):Equipments
 
     @GET("/recipes/{id}/nutritionWidget.json")
     suspend fun getNutritious(
         @Path("id") id:Int,
-        @Query("apiKey") apiKey: String = "ebc485795f884985bb398307e7e5843e"
+        @Query("apiKey") apiKey: String = "bfece9704b2348de9cb27c83ecff42ab"
     ):Nutritions
+
+    @GET("/recipes/autocomplete")
+    suspend fun getAutoComplete(
+        @Query("query") query:String,
+        @Query("apiKey") apiKey: String = "bfece9704b2348de9cb27c83ecff42ab"
+    ):List<Suggetion>
 }
