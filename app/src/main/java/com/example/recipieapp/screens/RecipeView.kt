@@ -1,7 +1,7 @@
 package com.example.recipieapp.screens
 
+import android.graphics.drawable.PaintDrawable
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -27,8 +27,11 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -53,80 +56,95 @@ import com.example.recipieapp.model.bad
 import com.example.recipieapp.ui.theme.RecipieAppTheme
 import com.example.recipieapp.viewmodel.DetailRecipeUIState
 import com.example.recipieapp.viewmodel.MainScreenViewmodel
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 
+private val refrence = FirebaseAuth.getInstance().currentUser?.uid?.let {
+    FirebaseDatabase.getInstance().reference.child(
+        it
+    ).child("Favorites")
+}
 @Composable
 fun RecipeView(
     modifier: Modifier = Modifier,
     id:String
 ) {
-    val scroll = rememberScrollState()
-    val viewmodel:MainScreenViewmodel  = viewModel(factory = MainScreenViewmodel.factory)
-    viewmodel.getDetaile(id.toInt())
-    val uiStae = viewmodel.detailRecipeUIState.collectAsState()
-    Text(text = id)
-    when(uiStae.value){
-         DetailRecipeUIState.Loading ->{
-            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-                CircularProgressIndicator()
-            }
-        }
-        is DetailRecipeUIState.Sucsess -> {
-            Column(modifier = modifier.verticalScroll(scroll)){
-                ImageComposable(
-                    name = (uiStae.value as DetailRecipeUIState.Sucsess).detail.title,
-                    URL = (uiStae.value as DetailRecipeUIState.Sucsess).detail.image
-                )
-                Spacer(modifier = modifier.height(20.dp))
-                Row (horizontalArrangement = Arrangement.SpaceAround){
-                    CardComopse(heading = "Ready in", value = (uiStae.value as DetailRecipeUIState.Sucsess).detail.readyInMinutes.toString()+"min")
-                    CardComopse(heading = "Servings", value = (uiStae.value as DetailRecipeUIState.Sucsess).detail.servings.toString())
-                    CardComopse(heading = "Price/serving", value = (uiStae.value as DetailRecipeUIState.Sucsess).detail.pricePerServing.toString())
-                }
-                Text(
-                    text = "Ingredients",
-                    fontSize = 19.sp,
-                    fontWeight = FontWeight(700),
-                    modifier = modifier.padding(start = 10.dp)
-                )
-                LazyRow {
-                    items((uiStae.value as DetailRecipeUIState.Sucsess).detail.extendedIngredients){
-                        ImageCard(
-                            name = it.name,
-                            URL = "https://img.spoonacular.com/ingredients_250x250/${it.image}",
-                            modifier = modifier.padding(start = 20.dp, top = 20.dp, bottom = 20.dp)
-                        )
-                    }
-                }
-                Perragraf(
-                    heading = "Instructions",
-                    bodyString = (uiStae.value as DetailRecipeUIState.Sucsess).detail.instructions.toString(),
-                )
-                Spacer(modifier = modifier.height(20.dp))
-                LazyRow {
-                    items((uiStae.value as DetailRecipeUIState.Sucsess).equipments.equipment){
-                        ImageCard(
-                            name = it.name,
-                            URL = "https://img.spoonacular.com/equipment_250x250/${it.image}",
-                            modifier = modifier.padding(start = 20.dp, bottom = 20.dp, top = 20.dp)
-                        )
-                    }
-                }
-                Spacer(modifier = modifier.height(20.dp))
-                Perragraf(
-                    heading = "Quick Summary",
-                    bodyString = (uiStae.value as DetailRecipeUIState.Sucsess).detail.summary
-                )
-                BadExpandableCard("Bad for health nutrition",(uiStae.value as DetailRecipeUIState.Sucsess).nutritions.bad)
-                GoodExpandableCard(tital = "Good for health nutrition", list = (uiStae.value as DetailRecipeUIState.Sucsess).nutritions.good)
-            }
-        }
+   Scaffold {innerpaddin->
+       val scroll = rememberScrollState()
+       val viewmodel:MainScreenViewmodel  = viewModel(factory = MainScreenViewmodel.factory)
+       viewmodel.getDetaile(id.toInt())
+       val uiStae = viewmodel.detailRecipeUIState.collectAsState()
+       var isFavorets by remember {
+           mutableStateOf(false)
+       }
+       when(uiStae.value){
+           DetailRecipeUIState.Loading ->{
+               Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+                   CircularProgressIndicator()
+               }
+           }
+           is DetailRecipeUIState.Sucsess -> {
+               Column(modifier = modifier
+                   .verticalScroll(scroll)
+                   .padding(paddingValues = innerpaddin)){
+                   ImageComposable(
+                       name = (uiStae.value as DetailRecipeUIState.Sucsess).detail.title,
+                       URL = (uiStae.value as DetailRecipeUIState.Sucsess).detail.image,
+                       isFavorets = isFavorets
+                   )
+                   Spacer(modifier = modifier.height(20.dp))
+                   Row (horizontalArrangement = Arrangement.SpaceAround){
+                       CardComopse(heading = "Ready in", value = (uiStae.value as DetailRecipeUIState.Sucsess).detail.readyInMinutes.toString()+"min")
+                       CardComopse(heading = "Servings", value = (uiStae.value as DetailRecipeUIState.Sucsess).detail.servings.toString())
+                       CardComopse(heading = "Price/serving", value = (uiStae.value as DetailRecipeUIState.Sucsess).detail.pricePerServing.toString())
+                   }
+                   Text(
+                       text = "Ingredients",
+                       fontSize = 19.sp,
+                       fontWeight = FontWeight(700),
+                       modifier = modifier.padding(start = 10.dp)
+                   )
+                   LazyRow {
+                       items((uiStae.value as DetailRecipeUIState.Sucsess).detail.extendedIngredients){
+                           ImageCard(
+                               name = it.name,
+                               URL = "https://img.spoonacular.com/ingredients_250x250/${it.image}",
+                               modifier = modifier.padding(start = 20.dp, top = 20.dp, bottom = 20.dp)
+                           )
+                       }
+                   }
+                   Perragraf(
+                       heading = "Instructions",
+                       bodyString = (uiStae.value as DetailRecipeUIState.Sucsess).detail.instructions.toString(),
+                   )
+                   Spacer(modifier = modifier.height(20.dp))
+                   LazyRow {
+                       items((uiStae.value as DetailRecipeUIState.Sucsess).equipments.equipment){
+                           ImageCard(
+                               name = it.name,
+                               URL = "https://img.spoonacular.com/equipment_250x250/${it.image}",
+                               modifier = modifier.padding(start = 20.dp, bottom = 20.dp, top = 20.dp)
+                           )
+                       }
+                   }
+                   Spacer(modifier = modifier.height(20.dp))
+                   Perragraf(
+                       heading = "Quick Summary",
+                       bodyString = (uiStae.value as DetailRecipeUIState.Sucsess).detail.summary
+                   )
+                   BadExpandableCard("Bad for health nutrition",(uiStae.value as DetailRecipeUIState.Sucsess).nutritions.bad)
+                   GoodExpandableCard(tital = "Good for health nutrition", list = (uiStae.value as DetailRecipeUIState.Sucsess).nutritions.good)
+               }
+           }
 
-        is DetailRecipeUIState.Error -> {
-            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-                Text(text = (uiStae.value as DetailRecipeUIState.Error).message)
-            }
-        }
-    }
+           is DetailRecipeUIState.Error -> {
+               Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+                   Text(text = (uiStae.value as DetailRecipeUIState.Error).message)
+               }
+           }
+       }
+   }
+
 }
 
 @Composable
@@ -149,7 +167,8 @@ fun GoodExpandableCard(
         ){
             Text(
                 text = tital,
-                modifier =modifier.weight(1f)
+                modifier = modifier
+                    .weight(1f)
                     .padding(start = 10.dp)
             )
             IconButton(onClick = {}) {
@@ -200,7 +219,8 @@ fun BadExpandableCard(
         ){
             Text(
                 text = tital,
-                modifier =modifier.weight(1f)
+                modifier = modifier
+                    .weight(1f)
                     .padding(start = 10.dp)
             )
             IconButton(onClick = {isExpanded =!isExpanded}) {
@@ -264,18 +284,6 @@ fun ImageCard(
 }
 
 
-
-@Preview(showSystemUi = true)
-@Composable
-private fun preview() {
-    RecipieAppTheme {
-
-    }
-}
-
-
-
-
 @Composable
 fun Perragraf(
     heading:String,
@@ -333,6 +341,7 @@ fun CardComopse(
 fun ImageComposable(
     name:String,
     URL:String,
+    isFavorets:Boolean,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -346,6 +355,23 @@ fun ImageComposable(
             contentScale = ContentScale.Crop,
             modifier= modifier.fillMaxSize()
         )
+        IconButton(
+            onClick = {
+
+            },
+            modifier= modifier
+                .fillMaxWidth()
+                .padding(end = 20.dp)
+                .align(Alignment.TopEnd)
+        ) {
+            Icon(
+                painter = painterResource(if(isFavorets) R.drawable.added else R.drawable.add_to_favourit),
+                contentDescription = "",
+                tint = Color.Unspecified,
+                modifier = modifier.size(50.dp)
+                    .align(Alignment.TopEnd)
+            )
+        }
         Box(modifier = modifier
             .fillMaxSize()
             .background(

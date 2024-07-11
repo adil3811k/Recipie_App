@@ -61,6 +61,13 @@ import com.example.recipieapp.model.Recipe
 import com.example.recipieapp.ui.theme.RecipieAppTheme
 import com.example.recipieapp.viewmodel.MainScreenViewmodel
 import com.example.recipieapp.viewmodel.listOfRecipiseUIState
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 
 data class BottomNavigationItems(
     val tital:String,
@@ -276,7 +283,7 @@ fun populercompose(
 @Composable
 fun RecipeTopAppBar(modifier: Modifier = Modifier) {
     TopAppBar(
-        title = { Text(text = "\uD83D\uDC4B Hey <user first name>", fontWeight = FontWeight(500))}
+        title = { Text(text = "\uD83D\uDC4B Hey ${Firebase.auth.currentUser?.displayName}", fontWeight = FontWeight(500))}
     )
 }
 

@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.example.recipieapp" />
+                  <option name="mobileSdkAppId" value="1:919141181344:android:3e65a0ceef2d7acffea6c5" />
+                  <option name="projectId" value="recipie-app-ff9d8" />
+                  <option name="projectNumber" value="919141181344" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

@@ -9,25 +9,18 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 
 enum class Screens{
-    Login_Singin,
     HomeScreen,
     Favorite_Recipes,
     RecipeView,
     Search,
 }
-
+//1002050 demo Recipe ID
 @Composable
 fun mainApp(
-
     modifier: Modifier = Modifier
 ) {
     val navController = rememberNavController()
-    NavHost(navController =navController , startDestination = Screens.Search.toString()) {
-        composable(route = Screens.Login_Singin.toString()){
-            Login_SingUpScreen{
-                navController.navigate(route = Screens.HomeScreen.toString())
-            }
-        }
+    NavHost(navController =navController , startDestination = Screens.HomeScreen.toString()) {
         composable(route = Screens.HomeScreen.toString()){
             HomeScreen(navController = navController)
         }
@@ -36,6 +29,9 @@ fun mainApp(
         }
         composable(route = Screens.Search.toString()){
             SearchScreeen(navHostController = navController)
+        }
+        composable("Demo"){
+            RecipeView(id = "1002050")
         }
     }
 }
