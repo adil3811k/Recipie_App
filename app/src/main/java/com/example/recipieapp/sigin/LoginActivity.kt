@@ -22,7 +22,10 @@ import com.example.recipieapp.screens.Login_SingUpScreen
 import com.example.recipieapp.ui.theme.RecipieAppTheme
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -37,7 +40,7 @@ class LoginActivity : ComponentActivity() {
                 var isSigin by remember{ mutableStateOf(false) }
                 val  ActivityALauncer = rememberLauncherForActivityResult(contract = ActivityResultContracts.StartIntentSenderForResult()) {result->
                     if(result.resultCode== RESULT_OK){
-                        GlobalScope.launch {
+                        GlobalScope.launch(Dispatchers.IO) {
                             isSigin = googleAuthCalint.signInWithIntent(result.data ?:return@launch)
                         }
                     }else{

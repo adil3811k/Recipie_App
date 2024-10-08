@@ -1,6 +1,5 @@
 package com.example.recipieapp.screens
 
-import android.graphics.drawable.PaintDrawable
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -30,12 +29,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,7 +44,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -53,17 +51,11 @@ import coil.compose.AsyncImage
 import com.example.recipieapp.R
 import com.example.recipieapp.model.Good
 import com.example.recipieapp.model.bad
-import com.example.recipieapp.ui.theme.RecipieAppTheme
 import com.example.recipieapp.viewmodel.DetailRecipeUIState
+import com.example.recipieapp.viewmodel.FavoritesUiState
 import com.example.recipieapp.viewmodel.MainScreenViewmodel
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
+import kotlinx.coroutines.launch
 
-private val refrence = FirebaseAuth.getInstance().currentUser?.uid?.let {
-    FirebaseDatabase.getInstance().reference.child(
-        it
-    ).child("Favorites")
-}
 @Composable
 fun RecipeView(
     modifier: Modifier = Modifier,
@@ -72,11 +64,12 @@ fun RecipeView(
    Scaffold {innerpaddin->
        val scroll = rememberScrollState()
        val viewmodel:MainScreenViewmodel  = viewModel(factory = MainScreenViewmodel.factory)
-       viewmodel.getDetaile(id.toInt())
-       val uiStae = viewmodel.detailRecipeUIState.collectAsState()
-       var isFavorets by remember {
-           mutableStateOf(false)
+       val favoritesUiState = viewmodel.favoritesUiState.collectAsState()
+       SideEffect {
+           viewmodel.getDetail(id.toInt())
        }
+       val uiStae = viewmodel.detailRecipeUIState.collectAsState()
+       val scope  = rememberCoroutineScope()
        when(uiStae.value){
            DetailRecipeUIState.Loading ->{
                Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center){
@@ -90,7 +83,12 @@ fun RecipeView(
                    ImageComposable(
                        name = (uiStae.value as DetailRecipeUIState.Sucsess).detail.title,
                        URL = (uiStae.value as DetailRecipeUIState.Sucsess).detail.image,
-                       isFavorets = isFavorets
+                       favoritesUiState = favoritesUiState.value,
+                       onIconClick = {
+                           scope.launch {
+                               viewmodel.isfavoterToagal(id)
+                           }
+                       }
                    )
                    Spacer(modifier = modifier.height(20.dp))
                    Row (horizontalArrangement = Arrangement.SpaceAround){
@@ -341,7 +339,8 @@ fun CardComopse(
 fun ImageComposable(
     name:String,
     URL:String,
-    isFavorets:Boolean,
+    favoritesUiState: FavoritesUiState,
+    onIconClick:()->Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -355,7 +354,28 @@ fun ImageComposable(
             contentScale = ContentScale.Crop,
             modifier= modifier.fillMaxSize()
         )
-        IconButton(
+        when (favoritesUiState){
+            is FavoritesUiState.Error -> {
+                Text(favoritesUiState.message)
+            }
+            FavoritesUiState.Loading -> {
+                Box(modifier =modifier.size(100.dp), contentAlignment = Alignment.TopEnd){
+                    CircularProgressIndicator()
+                }
+            }
+            is FavoritesUiState.Succeed -> {
+                    Icon(
+                        painter = painterResource(
+                            if (favoritesUiState.isFavorite)R.drawable.added
+                            else R.drawable.add_to_favourit,
+                        ),
+                        contentDescription = null,
+                        tint = Color.Unspecified,
+                        modifier = modifier.size(100.dp).align(Alignment.TopEnd).clickable {onIconClick() }
+                    )
+            }
+        }
+        /*IconButton(
             onClick = {
 
             },
@@ -371,7 +391,7 @@ fun ImageComposable(
                 modifier = modifier.size(50.dp)
                     .align(Alignment.TopEnd)
             )
-        }
+        }*/
         Box(modifier = modifier
             .fillMaxSize()
             .background(

@@ -94,29 +94,6 @@ fun HomeScreen(
     var selectedScreenIndex by remember{ mutableStateOf(0) }
     Scaffold (
         topBar ={if (selectedScreenIndex==0) RecipeTopAppBar() },
-        bottomBar ={
-            BottomAppBar(actions =  {
-                Row (
-                    modifier = modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround
-                ){
-                    IconButton(onClick = { selectedScreenIndex = 0 }) {
-                        Icon(
-                            painter = painterResource(if (selectedScreenIndex==0) R.drawable.vector else R.drawable.house),
-                            contentDescription = "",
-                            tint = Color.Unspecified
-                        )
-                    }
-                    IconButton(onClick = { selectedScreenIndex = 1 }) {
-                        Icon(
-                            painter = painterResource(if(selectedScreenIndex!=1)R.drawable.heart else R.drawable.vector__1_),
-                            contentDescription = "",
-                            tint = Color.Unspecified
-                        )
-                    }
-                }
-            })
-        },
     ){innperpadding->
         if (selectedScreenIndex==0){
             HomeSp(
@@ -131,44 +108,46 @@ fun HomeScreen(
 }
 
 
-
 @Composable
 fun HomeSp(
     viewmodel: MainScreenViewmodel,
-    parentNavyController:NavHostController,
+    parentNavyController: NavHostController,
     modifier: Modifier = Modifier
 ) {
     val uiState = viewmodel.uiState.collectAsState()
 
-        Column (
-            modifier= modifier
-                .padding(start = 20.dp)
-        ){
-            TextField(
-                value = "",
-                label = { Text(text = "Search any recipe")},
-                leadingIcon = { Icon(imageVector = Icons.Default.Search, contentDescription = "")},
-                onValueChange = {},
-                readOnly = true,
-                colors = TextFieldDefaults.colors(unfocusedContainerColor = MaterialTheme.colorScheme.secondary, unfocusedLabelColor = Color.Black),
-                modifier = Modifier
-                    .padding(end = 20.dp)
-                    .fillMaxWidth()
-                    .height(53.dp)
-                    .clip(RoundedCornerShape(16.dp))
-                    .clickable { parentNavyController.navigate(Screens.Search.toString()) },
-                enabled = false
-            )
-            Text(
-                text = "Discover tasty and healthy receipt",
-                fontSize = 16.sp
-            )
-            bodyCompose(
-                listOfRecipiseUIState = uiState.value,
-                onitemClick = { it->parentNavyController.navigate(Screens.RecipeView.toString()+"/$it")}
-            )
-        }
+    Column(
+        modifier = modifier
+            .padding(start = 20.dp)
+    ) {
+        TextField(
+            value = "",
+            label = { Text(text = "Search any recipe") },
+            leadingIcon = { Icon(imageVector = Icons.Default.Search, contentDescription = "") },
+            onValueChange = {},
+            readOnly = true,
+            colors = TextFieldDefaults.colors(
+                unfocusedContainerColor = MaterialTheme.colorScheme.secondary,
+                unfocusedLabelColor = Color.Black
+            ),
+            modifier = Modifier
+                .padding(end = 20.dp)
+                .fillMaxWidth()
+                .height(53.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .clickable { parentNavyController.navigate(Screens.Search.toString()) },
+            enabled = false
+        )
+        Text(
+            text = "Discover tasty and healthy receipt",
+            fontSize = 16.sp
+        )
+        bodyCompose(
+            listOfRecipiseUIState = uiState.value,
+            onitemClick = { it -> parentNavyController.navigate(Screens.RecipeView.toString() + "/$it") }
+        )
     }
+}
 
 @Composable
 fun bodyCompose(

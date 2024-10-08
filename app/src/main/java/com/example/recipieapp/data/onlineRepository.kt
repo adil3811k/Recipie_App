@@ -1,5 +1,6 @@
 package com.example.recipieapp.data
 
+import com.example.recipieapp.model.BulkFavoriteModulItem
 import com.example.recipieapp.model.Equipments
 import com.example.recipieapp.model.Nutritions
 import com.example.recipieapp.model.Recipes
@@ -14,6 +15,7 @@ interface RepositoryRecipeApp{
     suspend fun getDetailRecipe(id:Int):detailRecipe
     suspend fun getEquipments(id:Int):Equipments
     suspend fun getNutrition(id: Int):Nutritions
+    suspend fun getBulkRecipe(ids:String):List<BulkFavoriteModulItem>
 }
 class NetworkRepositoryRecipeApp(private val apiService: ApiService):RepositoryRecipeApp{
     override suspend fun gerRandomRecipes(): Recipes =  apiService.getRandomRecipe()
@@ -21,4 +23,5 @@ class NetworkRepositoryRecipeApp(private val apiService: ApiService):RepositoryR
     override suspend fun getDetailRecipe(id: Int): detailRecipe =apiService.getDetail(id)
     override suspend fun getEquipments(id: Int): Equipments = apiService.getEquipments(id)
     override suspend fun getNutrition(id: Int): Nutritions = apiService.getNutritious(id)
+    override suspend fun getBulkRecipe(ids: String): List<BulkFavoriteModulItem> = apiService.getBulkRecipe(ids)
 }
