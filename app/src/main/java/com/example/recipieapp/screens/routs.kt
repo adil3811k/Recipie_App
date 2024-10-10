@@ -1,10 +1,20 @@
-/*
-package com.example.recipieapp.screens
+import kotlinx.serialization.Serializable
 
-sealed class Screens(val routs:String) {
-    object WelcomeScreen:Screens("MainScreen")
-    object HomeScreen:Screens("HomeScreen")
-    object fovoriteScreens:Screens("Favorites")
-    object RecipesView:Screens("RecipesView")
 
-}*/
+sealed class Rout{
+
+    @Serializable
+    object Home
+
+    @Serializable
+    object Favorites
+
+    @Serializable
+    data class RecipeView(val id:String)
+
+    @Serializable
+    object Searcher
+
+    @Serializable
+    object Demo
+}

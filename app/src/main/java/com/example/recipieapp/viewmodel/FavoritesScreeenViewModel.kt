@@ -42,8 +42,16 @@ class FavoritesScreenViewModel(
     private  fun sebcriptRealTime(){
         Firebase.firestore.collection(UID).document("Favorites")
             .addSnapshotListener { value, error ->
-                viewModelScope.launch {
-                    getLIst()
+                if(error!=null){
+                    _FavoriteList.value = FavoritesUIStat.Error("Some error accord")
+                }else{
+                    viewModelScope.launch {
+                        if (value?.data!!.isEmpty()){
+                            _FavoriteList.value = FavoritesUIStat.Error("Favorite list is Empty")
+                        }else{
+                            getLIst()
+                        }
+                    }
                 }
             }
     }

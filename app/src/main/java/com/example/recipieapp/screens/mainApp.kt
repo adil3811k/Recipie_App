@@ -1,5 +1,7 @@
 package com.example.recipieapp.screens
 
+import   Rout
+import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
@@ -9,20 +11,24 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
+import androidx.navigation.toRoute
 import com.example.recipieapp.R
+
+private val TAG = "Rout"
 
 data class navigationHelperCalss(
     val tital :String,
@@ -47,19 +53,17 @@ val paddingvalue = PaddingValues(
     end = 0.dp,
     bottom = 0.dp
 )
-enum class Screens{
-    HomeScreen,
-    Favorite_Recipes,
-    RecipeView,
-    Search,
-}
 //1002050 demo Recipe ID
 @Composable
 fun mainApp(
     modifier: Modifier = Modifier
 ) {
     val navController = rememberNavController()
+    val backstackEntry by navController.currentBackStackEntryAsState()
     var selectedItemIndex by rememberSaveable { mutableStateOf(0) }
+    LaunchedEffect(backstackEntry?.destination?.route) {
+
+    }
     Scaffold(
         bottomBar = {
             BottomAppBar(contentPadding = paddingvalue) {
@@ -69,8 +73,8 @@ fun mainApp(
                         onClick = {
                             selectedItemIndex = Indext
                             when(Indext){
-                                0->navController.navigate(Screens.HomeScreen.toString())
-                                1->navController.navigate(Screens.Favorite_Recipes.toString())
+                                0->navController.navigate(Rout.Home)
+                                1->navController.navigate(Rout.Favorites)
                             }
                         },
                         alwaysShowLabel = false,
@@ -87,20 +91,21 @@ fun mainApp(
             }
         }
     ) {innerpadding->
-        NavHost(navController =navController , startDestination = Screens.HomeScreen.toString(),modifier = modifier.padding(innerpadding)) {
-            composable(route = Screens.HomeScreen.toString()){
+        NavHost(navController =navController , startDestination = Rout.Home,modifier = modifier.padding(innerpadding)) {
+            composable<Rout.Home>{
                 HomeScreen(navController = navController)
             }
-            composable(route = Screens.RecipeView.toString()+"/{id}", arguments = listOf(navArgument("id"){type = NavType.StringType})){
-                RecipeView(id = it.arguments?.getString("id").toString())
+            composable<Rout.RecipeView>{
+                val rout:Rout.RecipeView = it.toRoute()
+                RecipeView(id = rout.id)
             }
-            composable(route = Screens.Search.toString()){
+            composable<Rout.Searcher>{
                 SearchScreeen(navHostController = navController)
             }
-            composable(route = Screens.Favorite_Recipes.toString()){
+            composable<Rout.Favorites>{
                 FavoritesScreen(navController)
             }
-            composable("Demo"){
+            composable<Rout.Demo>{
                 RecipeView(id = "1002050")
             }
         }

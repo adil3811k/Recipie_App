@@ -2,6 +2,7 @@
 
 package com.example.recipieapp.screens
 
+import Rout
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -34,6 +35,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -90,16 +92,14 @@ fun HomeScreen(
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
+
     val viewmodel:MainScreenViewmodel  = viewModel(factory = MainScreenViewmodel.factory)
     var selectedScreenIndex by remember{ mutableStateOf(0) }
-    Scaffold (
-        topBar ={if (selectedScreenIndex==0) RecipeTopAppBar() },
-    ){innperpadding->
+    Scaffold{innperpadding->
         if (selectedScreenIndex==0){
             HomeSp(
                 viewmodel = viewmodel,
                 parentNavyController = navController,
-                modifier = Modifier.padding(innperpadding)
             )
         }else{
             FavoriteSp()
@@ -135,7 +135,7 @@ fun HomeSp(
                 .fillMaxWidth()
                 .height(53.dp)
                 .clip(RoundedCornerShape(16.dp))
-                .clickable { parentNavyController.navigate(Screens.Search.toString()) },
+                .clickable { parentNavyController.navigate(Rout.Searcher) },
             enabled = false
         )
         Text(
@@ -144,7 +144,7 @@ fun HomeSp(
         )
         bodyCompose(
             listOfRecipiseUIState = uiState.value,
-            onitemClick = { it -> parentNavyController.navigate(Screens.RecipeView.toString() + "/$it") }
+            onitemClick = { it ->parentNavyController.navigate(Rout.RecipeView(it.toString())) }
         )
     }
 }

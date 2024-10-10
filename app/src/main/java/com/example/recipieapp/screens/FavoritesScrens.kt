@@ -1,5 +1,6 @@
 package com.example.recipieapp.screens
 
+import Rout
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -55,8 +56,8 @@ fun FavoritesScreen(
             FavoritesUIStat.Loading -> {
                 Box(
                     modifier = modifier.fillMaxWidth().size(100.dp),
-                    contentAlignment = Alignment.TopEnd,
-                ){
+                    contentAlignment = Alignment.Center,
+                ) {
                     CircularProgressIndicator()
                 }
             }
@@ -66,7 +67,7 @@ fun FavoritesScreen(
                     modifier = modifier.align(Alignment.TopEnd).padding(top = 50.dp)
                 ) {
                     items( items = (Stat as FavoritesUIStat.Success).list,){
-                        MainBody(it, { navHostController.navigate(Screens.RecipeView.toString()+"/$it") })
+                        MainBody(it, { navHostController.navigate(Rout.RecipeView(it)) })
                     }
                 }
             }

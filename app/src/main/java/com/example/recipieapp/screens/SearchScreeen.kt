@@ -1,5 +1,6 @@
 package com.example.recipieapp.screens
 
+import Rout
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -83,7 +84,7 @@ fun SearchScreeen(
                             cardView(
                                 suggetion = it,
                                 onItemClick = {id->
-                                    navHostController.navigate(Screens.RecipeView.toString()+"/$id")
+                                    navHostController.navigate(Rout.RecipeView(id))
                                 })
                         }
                     }
