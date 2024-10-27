@@ -100,9 +100,12 @@ fun HomeScreen(
             HomeSp(
                 viewmodel = viewmodel,
                 parentNavyController = navController,
+                modifier = modifier.padding(innperpadding)
             )
         }else{
-            FavoriteSp()
+            FavoriteSp(
+                modifier = modifier.padding(innperpadding)
+            )
         }
     }
 }

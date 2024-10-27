@@ -2,4 +2,5 @@
     <string name="app_name">Recipie App</string>
     <string name="title_activity_login">LoginActivity</string>
     <string name="title_activity_demo">DemoActivity</string>
+    <string name="default_web_client_id">919141181344-6m5cb0u5rio39170p35ckmrf62o5kgkv.apps.googleusercontent.com</string>
 </resources>

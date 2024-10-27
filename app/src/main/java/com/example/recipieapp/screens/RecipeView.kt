@@ -78,8 +78,7 @@ fun RecipeView(
            }
            is DetailRecipeUIState.Sucsess -> {
                Column(modifier = modifier
-                   .verticalScroll(scroll)
-                   .padding(paddingValues = innerpaddin)){
+                   .verticalScroll(scroll)){
                    ImageComposable(
                        name = (uiStae.value as DetailRecipeUIState.Sucsess).detail.title,
                        URL = (uiStae.value as DetailRecipeUIState.Sucsess).detail.image,
@@ -371,7 +370,11 @@ fun ImageComposable(
                         ),
                         contentDescription = null,
                         tint = Color.Unspecified,
-                        modifier = modifier.size(100.dp).align(Alignment.TopEnd).clickable {onIconClick() }
+                        modifier = modifier
+                            .padding(top = 20.dp , end = 20.dp)
+                            .size(100.dp)
+                            .align(Alignment.TopEnd)
+                            .clickable {onIconClick() }
                     )
             }
         }

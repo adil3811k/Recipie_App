@@ -91,19 +91,19 @@ fun mainApp(
             }
         }
     ) {innerpadding->
-        NavHost(navController =navController , startDestination = Rout.Home,modifier = modifier.padding(innerpadding)) {
+        NavHost(navController =navController , startDestination = Rout.Home,) {
             composable<Rout.Home>{
-                HomeScreen(navController = navController)
+                HomeScreen(navController = navController, modifier = modifier.padding(innerpadding))
             }
             composable<Rout.RecipeView>{
                 val rout:Rout.RecipeView = it.toRoute()
                 RecipeView(id = rout.id)
             }
             composable<Rout.Searcher>{
-                SearchScreeen(navHostController = navController)
+                SearchScreeen(navHostController = navController, modifier = modifier.padding(innerpadding))
             }
             composable<Rout.Favorites>{
-                FavoritesScreen(navController)
+                FavoritesScreen(navController , modifier = modifier.padding(innerpadding))
             }
             composable<Rout.Demo>{
                 RecipeView(id = "1002050")
